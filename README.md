@@ -48,7 +48,7 @@ Content-Type: application/json; charset=utf-8
 
 ## Swagger UI
 
-![Swagger UI screenshot](./swagger-screenshot.png)
+![Swagger UI screenshot](./images/swagger-screenshot.png)
 
 
 ## Notes
