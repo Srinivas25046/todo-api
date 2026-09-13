@@ -72,7 +72,6 @@ app.delete('/tasks/:id', (req, res) => {
   if (!task) {
     return res.status(404).json({ error: "Task not found" });
   }
-
   db.prepare('DELETE FROM tasks WHERE id = ?').run(req.params.id);
   res.status(204).send();
 });
