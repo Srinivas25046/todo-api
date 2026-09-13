@@ -62,7 +62,6 @@ app.put('/tasks/:id', (req, res) => {
 
   db.prepare('UPDATE tasks SET title = ?, done = ? WHERE id = ?')
     .run(newTitle, newDone, req.params.id);
-
   const updated = db.prepare('SELECT * FROM tasks WHERE id = ?').get(req.params.id);
   res.json(updated);
 });
