@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const db = require('./db');
 const swaggerUi = require('swagger-ui-express');
 const openapiSpec = require('./openapi.json');
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(openapiSpec));
