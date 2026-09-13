@@ -50,11 +50,22 @@ Content-Type: application/json; charset=utf-8
 
 ![Swagger UI screenshot](./swagger-screenshot.png)
 
-*(Replace the image above with your own screenshot of `/docs` — take it after Stage 5, save it in this repo as `swagger-screenshot.png`, and commit it.)*
 
 ## Notes
 
 - Data is stored **in memory only** — restarting the server resets it back to the 3 seed tasks. This is intentional; persistence with a real database is Week 3's topic.
 - The server never trusts client input: `title` is required and validated on both create and update.
 
-<!-- If you complete Stage 7 (AI rematch), add your "AI vs me" section below this line. -->
+## Database
+
+This project stores tasks in **SQLite**, using Node's built-in `node:sqlite`
+module (rather than a separate package like `better-sqlite3`) after running
+into a native-binary compatibility crash on Windows during development.
+`node:sqlite` needs no compiled binary at all, so it sidesteps that class of
+problem entirely.
+
+**Why SQLite:** a single file, zero server setup, and — unlike the in-memory
+version from Week 2 — data now survives a server restart.
+
+`tasks.db` is created automatically the first time the server runs, and is
+git-ignored so every fresh clone starts with a clean, auto-seeded database.
