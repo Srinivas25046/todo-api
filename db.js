@@ -2,7 +2,7 @@ require('dotenv').config();
 const { Pool } = require('pg');
 
 const pool = new Pool({
-  connectionString: 'postgres://postgres:dev@localhost:5432/tasks',
+  connectionString: process.env.DATABASE_URL,
 });
 
 async function init() {
