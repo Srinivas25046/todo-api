@@ -2,6 +2,7 @@ services:
   api:
     build: .
     ports: ["3000:3000"]
+    env_file: .env
     environment:
       DATABASE_URL: postgres://postgres:dev@db:5432/tasks
       REDIS_URL: redis://redis:6379
