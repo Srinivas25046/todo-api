@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const db = require('./db');
+const redisClient = require('./redis');
 const swaggerUi = require('swagger-ui-express');
 const openapiSpec = require('./openapi.json');
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(openapiSpec));
