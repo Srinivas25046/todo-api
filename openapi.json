@@ -1,6 +1,15 @@
 {
   "openapi": "3.0.0",
   "info": { "title": "Task API", "version": "1.0.0" },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
   "paths": {
     "/tasks": {
       "get": {
@@ -41,6 +50,87 @@
         "summary": "Delete a task",
         "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
         "responses": { "204": { "description": "Deleted" }, "404": { "description": "Not found" } }
+      }
+    },
+    "/auth/signup": {
+      "post": {
+        "summary": "Create a new user account",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string" },
+                  "password": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "User created" },
+          "400": { "description": "Missing input" }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Log in and receive a JWT",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string" },
+                  "password": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Logged in, returns access_token and refresh_token" },
+          "400": { "description": "Missing input" },
+          "401": { "description": "Invalid credentials" }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "summary": "Log out",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "204": { "description": "Logged out" },
+          "401": { "description": "Invalid or missing token" }
+        }
+      }
+    },
+    "/protected/profile": {
+      "get": {
+        "summary": "Get your profile (requires login)",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Profile data" },
+          "401": { "description": "Invalid or missing token" }
+        }
+      }
+    },
+    "/protected/dashboard": {
+      "get": {
+        "summary": "Get your dashboard (requires login)",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Dashboard data" },
+          "401": { "description": "Invalid or missing token" }
+        }
+      }
+    },
+    "/public/info": {
+      "get": {
+        "summary": "Public info, no auth needed",
+        "responses": { "200": { "description": "Public message" } }
       }
     }
   }
