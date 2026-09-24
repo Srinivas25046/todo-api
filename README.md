@@ -100,3 +100,15 @@ This project's endpoints have not changed in shape or behavior across three comp
 The same five endpoints, status codes, and validation rules work identically against all three. This is intentional — it demonstrates that storage is an implementation detail hidden behind a stable API, not something clients need to know or care about.
  
 **A note on SQLite:** the assignment's suggested library, `better-sqlite3`, crashed with a native-binary compatibility error on this machine (Windows, Node 22). Rather than fight the native build toolchain, the project switched to Node's own built-in `node:sqlite` module, which needs no compiled binary at all and sidesteps that entire class of problem.
+
+## Testing the /triage endpoint
+
+Valid request:
+\`\`\`bash
+curl -i -X POST http://localhost:3000/triage -H "Content-Type: application/json" -d '{"text":"My invoice charged me twice this month"}'
+\`\`\`
+
+Invalid request (missing field):
+\`\`\`bash
+curl -i -X POST http://localhost:3000/triage -H "Content-Type: application/json" -d '{}'
+\`\`\`

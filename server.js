@@ -6,9 +6,31 @@ const supabase = require('./supabaseClient');
 const requireAuth = require('./authMiddleware');
 const swaggerUi = require('swagger-ui-express');
 const openapiSpec = require('./openapi.json');
+const { TriageInputSchema, TriageOutputSchema } = require('./src/llm/schema');
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(openapiSpec));
 const PORT = 3000;
 app.use(express.json());
+
+app.post('/triage', async (req, res) => {
+  const inputResult = TriageInputSchema.safeParse(req.body);
+  if (!inputResult.success) {
+    const firstIssue = inputResult.error.issues[0];
+    return res.status(400).json({ error: `Invalid field: ${firstIssue.path.join('.')} — ${firstIssue.message}` });
+  }
+
+  if (process.env.LLM_STUB === '1') {
+    const stubResponse = {
+      category: 'other',
+      urgency: 'low',
+      confidence: 0.5,
+      reason: 'Stub mode response — no model was called.',
+    };
+    return res.status(200).json(TriageOutputSchema.parse(stubResponse));
+  }
+
+  // Stage 2 replaces this placeholder with a real model call
+  return res.status(501).json({ error: 'Model call not yet implemented' });
+});
 
 app.get('/', (req, res) => {
   res.json({
