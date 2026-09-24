@@ -1,0 +1,10 @@
+[
+  { "input": "I was charged twice for my subscription this month", "expected_category": "billing" },
+  { "input": "the app crashes every time I try to export a PDF", "expected_category": "bug" },
+  { "input": "it would be great if you added a dark mode option", "expected_category": "feature" },
+  { "input": "hey", "expected_category": "other" },
+  { "input": "my card was declined but you still took the money", "expected_category": "billing" },
+  { "input": "clicking the save button does nothing at all", "expected_category": "bug" },
+  { "input": "can you support exporting to CSV as well as PDF", "expected_category": "feature" },
+  { "input": "asdkjfhaskjdfh", "expected_category": "other" }
+]
