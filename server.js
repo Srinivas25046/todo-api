@@ -16,6 +16,10 @@ const PORT = 3000;
 app.use(express.json());
 
 app.post('/triage', async (req, res) => {
+  if (process.env.LLM_ENABLED === 'false') {
+    return res.status(503).json({ error: 'AI triage is temporarily disabled' });
+  }
+
   const inputResult = TriageInputSchema.safeParse(req.body);
   if (!inputResult.success) {
     const firstIssue = inputResult.error.issues[0];
