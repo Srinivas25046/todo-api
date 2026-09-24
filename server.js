@@ -7,6 +7,7 @@ const requireAuth = require('./authMiddleware');
 const swaggerUi = require('swagger-ui-express');
 const openapiSpec = require('./openapi.json');
 const { TriageInputSchema, TriageOutputSchema } = require('./src/llm/schema');
+const { callModel } = require('./src/llm/callModel');
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(openapiSpec));
 const PORT = 3000;
 app.use(express.json());
@@ -28,8 +29,8 @@ app.post('/triage', async (req, res) => {
     return res.status(200).json(TriageOutputSchema.parse(stubResponse));
   }
 
-  // Stage 2 replaces this placeholder with a real model call
-  return res.status(501).json({ error: 'Model call not yet implemented' });
+  const rawOutput = await callModel(inputResult.data.text);
+  res.status(200).json({ raw: rawOutput }); // Stage 3 replaces this with real parsing
 });
 
 app.get('/', (req, res) => {
