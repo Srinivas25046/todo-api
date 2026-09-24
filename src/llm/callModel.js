@@ -13,14 +13,24 @@ const systemPrompt = fs.readFileSync(
   'utf-8'
 );
 
-async function callModel(userText) {
+async function callModel(userText, repairContext = null) {
+  const messages = [
+    { role: 'system', content: systemPrompt },
+    { role: 'user', content: userText },
+  ];
+
+  if (repairContext) {
+    messages.push({ role: 'assistant', content: repairContext.previousOutput });
+    messages.push({
+      role: 'user',
+      content: `Your previous answer was rejected for this reason: ${repairContext.error}\nReturn only corrected JSON matching the schema.`,
+    });
+  }
+
   const response = await client.chat.completions.create({
     model: process.env.LLM_MODEL,
     temperature: 0,
-    messages: [
-      { role: 'system', content: systemPrompt },
-      { role: 'user', content: userText },
-    ],
+    messages,
   });
 
   return response.choices[0].message.content;

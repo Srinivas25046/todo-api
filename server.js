@@ -7,7 +7,10 @@ const requireAuth = require('./authMiddleware');
 const swaggerUi = require('swagger-ui-express');
 const openapiSpec = require('./openapi.json');
 const { TriageInputSchema, TriageOutputSchema } = require('./src/llm/schema');
-const { callModel } = require('./src/llm/callModel');
+const fs = require('fs');
+const path = require('path');
+const parseAndValidate = require('./src/llm/parseAndValidate');
+const { callModel, PROMPT_VERSION } = require('./src/llm/callModel');
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(openapiSpec));
 const PORT = 3000;
 app.use(express.json());
@@ -29,8 +32,34 @@ app.post('/triage', async (req, res) => {
     return res.status(200).json(TriageOutputSchema.parse(stubResponse));
   }
 
-  const rawOutput = await callModel(inputResult.data.text);
-  res.status(200).json({ raw: rawOutput }); // Stage 3 replaces this with real parsing
+  const userText = inputResult.data.text;
+
+  // First attempt
+  let rawOutput = await callModel(userText);
+  let result = parseAndValidate(rawOutput);
+
+  // One repair attempt if the first failed
+  if (!result.success) {
+    const firstError = result.error;
+    rawOutput = await callModel(userText, { previousOutput: rawOutput, error: firstError });
+    result = parseAndValidate(rawOutput);
+  }
+
+  if (!result.success) {
+    const quarantineLine = JSON.stringify({
+      timestamp: new Date().toISOString(),
+      input: userText,
+      raw_output: rawOutput,
+      error: result.error,
+      prompt_version: PROMPT_VERSION,
+    });
+    fs.mkdirSync(path.join(__dirname, 'logs'), { recursive: true });
+    fs.appendFileSync(path.join(__dirname, 'logs', 'quarantine.jsonl'), quarantineLine + '\n');
+
+    return res.status(422).json({ error: 'Model output failed validation after repair attempt' });
+  }
+
+  res.status(200).json(result.data);
 });
 
 app.get('/', (req, res) => {
